@@ -9,7 +9,43 @@ use StringScanner\StringScanner;
 
 class StringScannerTest extends \PHPUnit_Framework_TestCase
 {
+
+    /** @var null|StringScanner  */
+    private $stringScanner = null;
+
+    public function __construct()
+    {
+        $this->stringScanner = new StringScanner();
+
+        $this->assertInstanceOf('StringScanner\StringScanner', $this->stringScanner);
+
+        $this->assertEquals("ab",  $this->stringScanner->setString('ab'), '::setString(), should return input');
+
+        $this->assertEquals("a",    $this->stringScanner->getCh(), '::getCh() ' . $this->stringScanner->inspect());
+        $this->assertEquals("b",    $this->stringScanner->getCh(), '::getCh() ' . $this->stringScanner->inspect());
+        $this->assertEquals(null,   $this->stringScanner->getCh(), '::getCh() ' . $this->stringScanner->inspect());
+
+
+        $this->stringScanner->setString('test string');
+
+        $this->assertEquals("test",    $this->stringScanner->scan('/\w+/'), '::scan() ' . $this->stringScanner->inspect());
+        $this->assertEquals(null,      $this->stringScanner->scan('/\w+/'), '::scan() ' . $this->stringScanner->inspect());
+        $this->assertEquals(" ",       $this->stringScanner->scan('/\s+/'), '::scan() ' . $this->stringScanner->inspect());
+        $this->assertEquals("string",  $this->stringScanner->scan('/\w+/'), '::scan() ' . $this->stringScanner->inspect());
+        $this->assertEquals(null,      $this->stringScanner->scan('/./'),   '::scan() ' . $this->stringScanner->inspect());
+
+
+
+    }
+
+
+    public function testAdvancingScanPointer(){
+        $this->assertTrue(true);
+    }
+
     /**
+     * @depends testAdvancingScanPointer
+     *
      * testing methods:
      *  match
      *  matched
@@ -18,6 +54,8 @@ class StringScannerTest extends \PHPUnit_Framework_TestCase
      *  preMatch
      *  postMatch
      *  scan
+     *
+     *
      */
     public function testMatch()
     {
@@ -40,6 +78,8 @@ class StringScannerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * @depends testAdvancingScanPointer
+     *
      * testing methods:
      *  bol
      *  eos

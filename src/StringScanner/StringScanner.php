@@ -216,6 +216,7 @@ class StringScanner
     public function setString($string)
     {
         $this->string = $string;
+        $this->reset();
 
         return $this->string;
     }
