@@ -119,7 +119,7 @@ class StringScanner
      */
     public function exists($pattern)
     {
-        return $this->process($pattern, false, false, false);
+        return $this->process($pattern, false, true, false);
     }
 
     /**
@@ -246,7 +246,9 @@ class StringScanner
      */
     public function setPos($pos)
     {
-        return $this->pos = $pos;
+        $this->pos = $pos;
+
+        return $this->pos;
     }
 
     public function reset()
@@ -532,12 +534,15 @@ class StringScanner
 
             if ($headOnly) {
                 $matchedString = $this->matched[0][0];
+                $matchedLength = $this->strlen($this->matched[0][0]);
             } else {
                 $preMatch      = $this->substr($this->string, $this->prevPos, $this->matched[0][1]);
                 $matchedString = $preMatch . $this->matched[0][0];
+                $matchedLength = $this->strlen($matchedString);
+
             }
 
-            $return = ($getString === true) ? $matchedString : $this->strlen($this->matched[0][0]);
+            $return = ($getString === true) ? $matchedString : $matchedLength;
 
         }
 
