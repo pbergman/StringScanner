@@ -16,8 +16,73 @@ class StringScannerTest extends \PHPUnit_Framework_TestCase
     public function __construct()
     {
         $this->stringScanner = new StringScanner();
-
         $this->assertInstanceOf('StringScanner\StringScanner', $this->stringScanner);
+
+    }
+
+    public function testAddString()
+    {
+        $this->stringScanner->setString('test string');
+        $this->assertEquals("test",    $this->stringScanner->scan('/\w+/'), '::scan() '   . $this->stringScanner->inspect());
+        $this->assertEquals(4,         $this->stringScanner->getPos(),      '::getPos() ' . $this->stringScanner->inspect());
+
+        $this->stringScanner->setString('test string');
+        $this->assertEquals(0,       $this->stringScanner->getPos(),  '::setString() should reset pos');
+        $this->assertEquals(null,    $this->stringScanner->matched(), '::setString() should reset matched');
+
+    }
+
+    /**
+     * testing methods:
+     *  check
+     *  checkUntil
+     *  exist
+     *  match
+     *  peek
+     */
+    public function testLookAhead()
+    {
+        $this->stringScanner->setString('Fri Dec 12 1975 14:39');
+        $this->assertEquals("Fri", $this->stringScanner->check('/Fri/'),  '::check() '     . $this->stringScanner->inspect());
+        $this->assertEquals(0,     $this->stringScanner->getPos(),           '::pos() '       . $this->stringScanner->inspect());
+        $this->assertEquals("Fri", $this->stringScanner->matched(),       '::matched() '   . $this->stringScanner->inspect());
+        $this->assertEquals(null,  $this->stringScanner->check('/12/'),   '::check() '     . $this->stringScanner->inspect());
+        $this->assertEquals(null,  $this->stringScanner->matched(),       '::matched() '   . $this->stringScanner->inspect());
+
+
+        $this->stringScanner->setString('Fri Dec 12 1975 14:39');
+        $this->assertEquals("Fri Dec 12",  $this->stringScanner->checkUntil('/12/'),  '::checkUntil() ' . $this->stringScanner->inspect());
+        $this->assertEquals(0 ,            $this->stringScanner->getPos(),            '::getPos() '     . $this->stringScanner->inspect());
+        $this->assertEquals(12,            $this->stringScanner->matched(),           '::matched() '   . $this->stringScanner->inspect());
+
+
+        $this->stringScanner->setString('test string');
+        $this->assertEquals("tes",       $this->stringScanner->exists('/s/'),  '::exists() ' . $this->stringScanner->inspect());
+        $this->assertEquals("test",  $this->stringScanner->scan('/test/'), '::scan() '   . $this->stringScanner->inspect());
+
+\        var_dump($this->stringScanner->exists('/s/'));
+        var_dump($this->stringScanner);
+
+        $this->assertEquals(2,       $this->stringScanner->exists('/s/'),  '::exists() ' . $this->stringScanner->inspect());
+        $this->assertEquals(null,    $this->stringScanner->exists('/e/'),  '::exists() ' . $this->stringScanner->inspect());
+
+
+
+    }
+
+    /**
+     * @depends testAddString
+     *
+     * testing methods:
+     *  getCh
+     *  getByte
+     *  scan
+     *  scanUntil
+     *  skip
+     *  skipUntil
+     */
+    public function testAdvancingScanPointer()
+    {
 
         $this->assertEquals("ab",  $this->stringScanner->setString('ab'), '::setString(), should return input');
 
@@ -25,8 +90,10 @@ class StringScannerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("b",    $this->stringScanner->getCh(), '::getCh() ' . $this->stringScanner->inspect());
         $this->assertEquals(null,   $this->stringScanner->getCh(), '::getCh() ' . $this->stringScanner->inspect());
 
-
         $this->stringScanner->setString('test string');
+        $this->assertEquals(0,       $this->stringScanner->getPos(),  '::setString() should reset pos');
+        $this->assertEquals(null,    $this->stringScanner->matched(), '::setString() should reset matched');
+
 
         $this->assertEquals("test",    $this->stringScanner->scan('/\w+/'), '::scan() ' . $this->stringScanner->inspect());
         $this->assertEquals(null,      $this->stringScanner->scan('/\w+/'), '::scan() ' . $this->stringScanner->inspect());
@@ -34,17 +101,25 @@ class StringScannerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("string",  $this->stringScanner->scan('/\w+/'), '::scan() ' . $this->stringScanner->inspect());
         $this->assertEquals(null,      $this->stringScanner->scan('/./'),   '::scan() ' . $this->stringScanner->inspect());
 
+        $this->stringScanner->setString('Fri Dec 12 1975 14:39');
+        $this->assertEquals("Fri Dec 1",    $this->stringScanner->scanUntil('/1/'),     '::scanUntil() ' . $this->stringScanner->inspect());
+        $this->assertEquals("Fri Dec ",     $this->stringScanner->preMatch(),           '::scanUntil() ' . $this->stringScanner->inspect());
+        $this->assertEquals(null,           $this->stringScanner->scanUntil('/XYZ/'),   '::scanUntil() ' . $this->stringScanner->inspect());
 
+        $this->stringScanner->setString('test string');
+        $this->assertEquals(4,     $this->stringScanner->skip('/\w+/'),   '::skip() ' . $this->stringScanner->inspect());
+        $this->assertEquals(null,  $this->stringScanner->skip('/\w+/'),   '::skip() ' . $this->stringScanner->inspect());
+        $this->assertEquals(1,     $this->stringScanner->skip('/\s+/'),   '::skip() ' . $this->stringScanner->inspect());
+        $this->assertEquals(6,     $this->stringScanner->skip('/\w+/'),   '::skip() ' . $this->stringScanner->inspect());
+        $this->assertEquals(null,  $this->stringScanner->skip('/./'),     '::skip() ' . $this->stringScanner->inspect());
 
-    }
+        $this->stringScanner->setString('Fri Dec 12 1975 14:39');
+        $this->assertEquals(10,    $this->stringScanner->skipUntil('/12/'),'::skipUntil() ' . $this->stringScanner->inspect());
 
-
-    public function testAdvancingScanPointer(){
-        $this->assertTrue(true);
     }
 
     /**
-     * @depends testAdvancingScanPointer
+     * @depends testAddString
      *
      * testing methods:
      *  match
@@ -55,75 +130,79 @@ class StringScannerTest extends \PHPUnit_Framework_TestCase
      *  postMatch
      *  scan
      *
-     *
      */
     public function testMatch()
     {
-        $string = new StringScanner('test string');
+        $this->stringScanner->setString('test string');
 
-        $this->assertEquals(4,      $string->match('/\w+/'),    '::match(), should return 4 for "\w+" on string "test string"');
-        $this->assertEquals('test', $string->matched(),         '::matched() returns last match value (test)');
-        $this->assertEquals(4,      $string->matchedSize(),     '::matchedSize(), should return 4 for the last matched size');
-        $this->assertTrue($string->isMatched(),                 '::isMatched() return true when we got a match');
+        $this->assertEquals(4,      $this->stringScanner->match('/\w+/'),    '::match(), should return 4 for "\w+" on string "test string"');
+        $this->assertEquals('test', $this->stringScanner->matched(),         '::matched() returns last match value (test)');
+        $this->assertEquals(4,      $this->stringScanner->matchedSize(),     '::matchedSize(), should return 4 for the last matched size');
+        $this->assertTrue($this->stringScanner->isMatched(),                 '::isMatched() return true when we got a match');
 
-        $this->assertEquals(null,   $string->match('/\d+/'),    '::match(), should return null because there are no numbers after "test" in "test string"');
-        $this->assertFalse($string->isMatched(),                '::isMatched() return false because we do not have a match');
-        $this->assertEquals(null,   $string->matchedSize(),     '::matchedSize(), should return NULL for the last matched size');
+        $this->assertEquals(null,   $this->stringScanner->match('/\d+/'),    '::match(), should return null because there are no numbers after "test" in "test string"');
+        $this->assertFalse($this->stringScanner->isMatched(),                '::isMatched() return false because we do not have a match');
+        $this->assertEquals(null,   $this->stringScanner->matchedSize(),     '::matchedSize(), should return NULL for the last matched size');
 
-        $this->assertEquals('test',   $string->scan('/\w+/'),   '::scan(), should return "test" for scan "\w+" on "test string"');
-        $this->assertEquals(' ' ,     $string->scan('/\s+/'),   '::scan(), should return " " for "\s+" on (sub)string " string"');
-        $this->assertEquals('test',   $string->preMatch(),      '::preMatch()  should return "test" because last match was " " ');
-        $this->assertEquals('string', $string->postMatch(),     '::postMatch() should return "string" because last match was " " ');
+        $this->assertEquals('test',   $this->stringScanner->scan('/\w+/'),   '::scan(), should return "test" for scan "\w+" on "test string"');
+        $this->assertEquals(' ' ,     $this->stringScanner->scan('/\s+/'),   '::scan(), should return " " for "\s+" on (sub)string " string"');
+        $this->assertEquals('test',   $this->stringScanner->preMatch(),      '::preMatch()  should return "test" because last match was " " ');
+        $this->assertEquals('string', $this->stringScanner->postMatch(),     '::postMatch() should return "string" because last match was " " ');
 
     }
 
     /**
-     * @depends testAdvancingScanPointer
+     * @depends testAddString
      *
      * testing methods:
      *  bol
      *  eos
      *  rest
      *  pos
+     *
+     *  reset
+     *  terminate
      */
     public function testFindingWhereWeAre()
     {
 
-        $string = new StringScanner("test\ntest\n");
-        $this->assertTrue($string->bol(),               '::bol() ' . $string->inspect());
-        $string->scan('/te/');
-        $this->assertFalse($string->bol(),              '::bol() ' . $string->inspect());
-        $string->scan('/st\n/');
-        $this->assertTrue($string->bol(),               '::bol() ' . $string->inspect());
-        $string->terminate();
-        $this->assertTrue($string->bol(),               '::bol() ' . $string->inspect());
+        $this->stringScanner->setString("test\ntest\n");
+        $this->assertTrue($this->stringScanner->bol(), '::bol() ' . $this->stringScanner->inspect());
+        $this->stringScanner->scan('/te/');
+        $this->assertFalse($this->stringScanner->bol(), '::bol() ' . $this->stringScanner->inspect());
+        $this->stringScanner->scan('/st\n/');
+        $this->assertTrue($this->stringScanner->bol(),  '::bol() ' . $this->stringScanner->inspect());
+        $this->stringScanner->terminate();
+        $this->assertTrue($this->stringScanner->bol(),  '::bol() ' . $this->stringScanner->inspect());
 
 
-        $string = new StringScanner("test string");
+        $this->stringScanner->setString("test string");
 
-        $this->assertFalse($string->eos(),              '::eos() ' . $string->inspect());
-        $string->scan('/test/');
-        $this->assertFalse($string->eos(),              '::eos() ' . $string->inspect());
-        $string->terminate();
-        $this->assertTrue($string->eos(),               '::eos() ' .  $string->inspect());
-
-
-        $string->reset();
-        $string->scan('/test/');
-        $this->assertEquals(' string',  $string->rest(),     '::rest(), rest of string should be " string" after scan of "test"');
-        $this->assertEquals(7,          $string->restSize(), '::rest(), size should be 7 from length of string " string"');
+        $this->assertFalse($this->stringScanner->eos(), '::eos() ' . $this->stringScanner->inspect());
+        $this->stringScanner->scan('/test/');
+        $this->assertFalse($this->stringScanner->eos(), '::eos() ' . $this->stringScanner->inspect());
+        $this->stringScanner->terminate();
+        $this->assertTrue($this->stringScanner->eos(),  '::eos() ' . $this->stringScanner->inspect());
 
 
-        $string->reset();
-        $this->assertEquals(0,   $string->getPos(),   '::pos() ' . $string->inspect());
-        $string->scanUntil('/str/');
-        $this->assertEquals(8,   $string->getPos(),   '::pos() ' . $string->inspect());
-        $string->terminate();
-        $this->assertEquals(11,  $string->getPos(),   '::pos() ' . $string->inspect());
+        $this->stringScanner->reset();
+        $this->stringScanner->scan('/test/');
+        $this->assertEquals(' string',  $this->stringScanner->rest(),     '::rest(), rest of string should be " string" after scan of "test"');
+        $this->assertEquals(7,          $this->stringScanner->restSize(), '::rest(), size should be 7 from length of string " string"');
 
-        $string->reset();
-        $string->setPos(7);
-        $this->assertEquals("ring",  $string->rest(),  '::pos() ' . $string->inspect());
+
+        $this->stringScanner->reset();
+        $this->assertEquals(0,   $this->stringScanner->getPos(),   '::pos() ' . $this->stringScanner->inspect());
+        $this->stringScanner->scanUntil('/str/');
+        $this->assertEquals(8,   $this->stringScanner->getPos(),   '::pos() ' . $this->stringScanner->inspect());
+        $this->stringScanner->terminate();
+        $this->assertEquals(11,  $this->stringScanner->getPos(),   '::pos() ' . $this->stringScanner->inspect());
+        $this->assertEquals(3,   $this->stringScanner->setPos(3),   '::pos() ' . $this->stringScanner->inspect());
+
+
+        $this->stringScanner->reset();
+        $this->stringScanner->setPos(7);
+        $this->assertEquals("ring",  $this->stringScanner->rest(),  '::pos() ' . $this->stringScanner->inspect());
 
 
     }
