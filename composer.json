@@ -1,0 +1,20 @@
+{
+    "name": "pbergman/string-scanner",
+    "description": "port from ruby PortScanner",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Philip Bergman",
+            "email": "pbergman@live.nl"
+        }
+    ],
+    "autoload": { 
+        "psr-0": { "StringScanner" : "src/"   }
+    },
+    
+
+    "minimum-stability": "stable",
+    "require": {
+
+    }
+}
