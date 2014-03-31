@@ -2,17 +2,16 @@
     "name": "pbergman/string-scanner",
     "description": "port from ruby PortScanner",
     "license": "MIT",
+    "keywords": ["scanner", "lexer", "stringscanner", "string"],
     "authors": [
         {
             "name": "Philip Bergman",
             "email": "pbergman@live.nl"
         }
     ],
-    "autoload": { 
-        "psr-0": { "StringScanner" : "src/"   }
+    "autoload": {
+        "psr-0": { "StringScanner" : ""   }
     },
-    
-
     "minimum-stability": "stable",
     "require": {
 
