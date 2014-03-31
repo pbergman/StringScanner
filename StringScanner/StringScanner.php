@@ -9,7 +9,6 @@ namespace StringScanner;
  * a port from ruby StringScanner
  *
  * @url http://docs.ruby-lang.org/en/2.1.0/StringScanner.html
- * @url https://github.com/rubysl/rubysl-strscan/blob/2.0/lib/rubysl/strscan/strscan.rb
  *
  * Class StringScanner
  */
@@ -119,7 +118,7 @@ class StringScanner
      */
     public function exists($pattern)
     {
-        return $this->process($pattern, false, true, false);
+        return $this->process($pattern, false, false, false);
     }
 
     /**
@@ -524,25 +523,15 @@ class StringScanner
 
         if ($this->isMatched() === true) {
 
-            $toMove   = ($this->matched[0][1] - $this->pos) + $this->strlen($this->matched[0][0]);
-
             $this->prevPos = $this->pos;
 
+            $width = ($this->matched[0][1] + $this->strlen($this->matched[0][0])) - $this->prevPos;
+
             if ($advancePosition === true){
-                $this->pos += $toMove;
+                $this->pos += $width;
             }
 
-            if ($headOnly) {
-                $matchedString = $this->matched[0][0];
-                $matchedLength = $this->strlen($this->matched[0][0]);
-            } else {
-                $preMatch      = $this->substr($this->string, $this->prevPos, $this->matched[0][1]);
-                $matchedString = $preMatch . $this->matched[0][0];
-                $matchedLength = $this->strlen($matchedString);
-
-            }
-
-            $return = ($getString === true) ? $matchedString : $matchedLength;
+            $return = ($getString === true) ? $this->substr($this->string, $this->prevPos, $width) : $width;
 
         }
 
