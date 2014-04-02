@@ -26,25 +26,25 @@ The recommended way to install is [through composer](http://getcomposer.org).
 use StringScanner\StringScanner;
 
 $s = new StringScanner('This is an example string')
-$s.eos()              # -> false
+$s->eos()              # -> false
 
-$s.scan('/\w+/')      # -> "This"
-$s.scan('/\w+/')      # -> nil
-$s.scan('/\s+/')      # -> " "
-$s.scan('/\s+/')      # -> nil
-$s.scan('/\w+/')      # -> "is"
-$s.eos()              # -> false
+$s->scan('/\w+/')      # -> "This"
+$s->scan('/\w+/')      # -> nil
+$s->scan('/\s+/')      # -> " "
+$s->scan('/\s+/')      # -> nil
+$s->scan('/\w+/')      # -> "is"
+$s->eos()              # -> false
 
-$s.scan('/\s+/')      # -> " "
-$s.scan('/\w+/')      # -> "an"
-$s.scan('/\s+/')      # -> " "
-$s.scan('/\w+/')      # -> "example"
-$s.scan('/\s+/')      # -> " "
-$s.scan('/\w+/')      # -> "string"
-$s.eos()              # -> true
+$s->scan('/\s+/')      # -> " "
+$s->scan('/\w+/')      # -> "an"
+$s->scan('/\s+/')      # -> " "
+$s->scan('/\w+/')      # -> "example"
+$s->scan('/\s+/')      # -> " "
+$s->scan('/\w+/')      # -> "string"
+$s->eos()              # -> true
 
-$s.scan('/\s+/')      # -> null
-$s.scan('/\w+/')      # -> null
+$s->scan('/\s+/')      # -> null
+$s->scan('/\w+/')      # -> null
 
 ```
 
