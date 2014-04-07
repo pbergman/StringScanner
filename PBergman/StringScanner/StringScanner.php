@@ -3,7 +3,8 @@
  * @author    Philip Bergman <pbergman@live.nl>
  * @copyright Philip Bergman
  */
-namespace StringScanner;
+
+namespace PBergman\StringScanner;
 
 /**
  * a port from ruby StringScanner

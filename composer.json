@@ -10,7 +10,7 @@
         }
     ],
     "autoload": {
-        "psr-0": { "StringScanner" : ""   }
+        "psr-0": { "PBergman\\StringScanner\\" : ""  }
     },
     "minimum-stability": "stable",
     "require": {

@@ -3,9 +3,9 @@
  * @author    Philip Bergman <pbergman@live.nl>
  * @copyright Philip Bergman
  */
-require_once dirname(__FILE__) . '/../../vendor/autoload.php';
+require_once dirname(__FILE__) . '/../../../vendor/autoload.php';
 
-use StringScanner\StringScanner;
+use PBergman\StringScanner\StringScanner;
 
 class StringScannerTest extends \PHPUnit_Framework_TestCase
 {
@@ -16,7 +16,7 @@ class StringScannerTest extends \PHPUnit_Framework_TestCase
     public function __construct()
     {
         $this->stringScanner = new StringScanner();
-        $this->assertInstanceOf('StringScanner\StringScanner', $this->stringScanner);
+        $this->assertInstanceOf('PBergman\StringScanner\StringScanner', $this->stringScanner);
 
     }
 
